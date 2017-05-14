@@ -1,5 +1,5 @@
 # Pi2Go
-4tronix Pi2Go robot C++ library
+4tronix Pi2Go Full robot C++ library 
 
 1. install basic development system if it is not installed, for Raspbian:
 sudo apt-get install build-essential 
