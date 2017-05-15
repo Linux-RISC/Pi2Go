@@ -4,34 +4,34 @@
 You can compile the sources or go to step 4 to run the examples.
 
 1. install basic development system and Wiring Pi if it is not installed, for Raspbian:
-sudo apt-get install build-essential wiringpi
+- sudo apt-get install build-essential wiringpi
 
 2. delete the current executable files:
-make clean
+- make clean
 
 3. run make to build the current .o and executable files:
-make
+- make
 
 4. enter into examples directory:
-cd examples
+- cd examples
 
 5. run examples as root:
-sudo ./testRGBLEDs
+- sudo ./testRGBLEDs
 
-testIRSensors: tests the IR sensors, useful to avoid near obstacles
-testLightSensors: tests the front and rear light sensors, use the lantern of your cell phone for this test
-testMotors: flip the robot and run this test and watch how wheels move
-testRGBLEDs: nice RGB test, modifing color and intensity, useful to report states
-testSonar: measures long distances in cm
-testSwitch: tests built-in switch, useful to modify your robot behavior in runtime
-testLEDs: old code, forget it
+- testIRSensors: tests the IR sensors, useful to avoid near obstacles
+- testLightSensors: tests the front and rear light sensors, use the lantern of your cell phone for this test
+- testMotors: flip the robot and run this test and watch how wheels move
+- testRGBLEDs: nice RGB test, modifing color and intensity, useful to report states
+- testSonar: measures long distances in cm
+- testSwitch: tests built-in switch, useful to modify your robot behavior in runtime
+- testLEDs: old code, forget it
 
 6. enter wanderer directory and compile robot example:
-cd wanderer
-optional: make
+- cd wanderer
+- optional: make
 
 7. run wanderer as root and follow the on screen instructions:
-sudo ./wanderer
+- sudo ./wanderer
 
 8. use wanderer robot to build your own robot program, the robot works according to these rules:
 - the robot remains stopped until the switch is pressed
