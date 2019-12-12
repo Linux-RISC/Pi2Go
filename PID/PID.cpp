@@ -15,23 +15,23 @@ PID::PID (float Kp,float Ki,float Kd,float setPoint,float minOutput, float maxOu
 	this->setPoint = setPoint;
 	this->minOutput = minOutput;
 	this->maxOutput = maxOutput;
+	sampleTime_ms = 100;
 	reset();
 }
 //--------------------------------------------------------------------------------
 void PID::reset () {
 
 	b_get_previous_time = true;
-	sampleTime_ms = 100;
-	previous_error = 0;
-	integral = 0;
-
-	// not necessary for calculations, just to assign initial values
-	dt = 100;
+	dt = 0;
+	
 	proportional = 0;
+	integral = 0;
 	derivative = 0;
-	error = 0;
-	output = 0;
+
 	input = 0;
+	output = 0;
+	error = 0;
+	previous_error = 0;
 }
 //--------------------------------------------------------------------------------
 float PID::get_Kp () {
@@ -94,6 +94,11 @@ void PID::set_setPoint (float setPoint) {
 	this->setPoint = setPoint;
 }
 //--------------------------------------------------------------------------------
+float PID::get_dt () {
+
+	return dt;
+}
+//--------------------------------------------------------------------------------
 unsigned PID::get_sampleTime_ms () {
 
 	return sampleTime_ms;
@@ -114,11 +119,6 @@ float PID::get_input () {
 float PID::get_output () {
 
 	return output;
-}
-//--------------------------------------------------------------------------------
-float PID::get_dt () {
-
-	return dt;
 }
 //--------------------------------------------------------------------------------
 float PID::get_previous_error () {
@@ -172,7 +172,15 @@ clock_t PID::difftime_ms_msg (clock_t startTime,clock_t endTime,char *msg) {
 	return totalTime;
 }
 /*----------------------------------------------------------------------------*/
-bool PID::compute (float input,bool externalTimeCheck) {
+bool PID::compute (float input) {
+	return compute (input,false,0);
+}
+/*----------------------------------------------------------------------------*/
+bool PID::compute (float input,float external_dt) {
+	return compute (input,true,dt);
+}
+/*----------------------------------------------------------------------------*/
+bool PID::compute (float input,bool externalTimeCheck,float external_dt) {
 /*
 https://en.wikipedia.org/wiki/PID_controller#Pseudocode
 previous_error = 0
@@ -187,23 +195,23 @@ start:
   goto start
 */
 	struct timeval current_time;
-	//clock_t current_time;
 
 	if (!externalTimeCheck)
 		if (b_get_previous_time) {
 			gettimeofday(&previous_time,NULL);
-			//previous_time = clock();
 			b_get_previous_time = false;
 			return false;
 		}
 
 	gettimeofday(&current_time,NULL);
-	//current_time = clock();
-	if (!externalTimeCheck)
+	if (externalTimeCheck)
+		dt = external_dt;
+	else
 		if ((dt=difftime_ms(previous_time,current_time))<sampleTime_ms) {
 			//printf ("-%.2f\n",dt);
 			return false;
 		}
+		
 	//printf ("+%.2f\n",dt);
 	b_get_previous_time = true;
 	previous_time = current_time;

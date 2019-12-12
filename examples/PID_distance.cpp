@@ -88,8 +88,6 @@ int main(int argc, char **argv) {
 			//printf ("%u,%u\n",totalTime,myPID.get_sampleTime_ms());
 			if (totalTime<myPID.get_sampleTime_ms())
 				continue;
-			else
-				totalTime = 0;
 		}
 
 		//struct timeval time_begin, time_end;
@@ -100,8 +98,8 @@ int main(int argc, char **argv) {
 
 		printf ("%s distance=%.2f\n",robot.getStringTime(),measured_distance);
 
-		if (myPID.compute (fabs(target_distance-measured_distance),externalTimeCheck)) {
-		//if (myPID.compute (fabs(target_distance-measured_distance))) {
+		if (myPID.compute (fabs(target_distance-measured_distance),externalTimeCheck,totalTime)) {
+			totalTime = 0;
 			printf("%s Kp=%.2f, Ki=%.2f, Kd=%.2f\n",robot.getStringTime(),myPID.get_Kp(),myPID.get_Ki(),myPID.get_Kd());
 			printf("%s setPoint=%.2f, input=%.2f, error=%.2f, output=%.2f, previous_error=%.2f\n",robot.getStringTime(),myPID.get_setPoint(),myPID.get_input(),myPID.get_error(),myPID.get_output(),myPID.get_previous_error());
 			printf("%s dt=%.2f, sampletime_ms=%u, proportional=%.2f, integral=%.2f, derivative=%.2f\n",robot.getStringTime(),myPID.get_dt(),myPID.get_sampleTime_ms(),myPID.get_proportional(),myPID.get_integral(),myPID.get_derivative());
