@@ -208,11 +208,11 @@ start:
 		dt = external_dt;
 	else
 		if ((dt=difftime_ms(previous_time,current_time))<sampleTime_ms) {
-			//printf ("-%.2f\n",dt);
+			//printf ("dt=%.2f\n",dt);
 			return false;
 		}
 		
-	//printf ("+%.2f\n",dt);
+	//printf ("dt=%.2f\n",dt);
 	b_get_previous_time = true;
 	previous_time = current_time;
 	this->input = input;

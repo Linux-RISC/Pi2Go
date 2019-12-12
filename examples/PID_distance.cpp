@@ -41,14 +41,16 @@ int main(int argc, char **argv) {
 	
 	// Kp, Ki, Kd, setPoint (20 cm), minOutput (0%), maxOutput (100%);
 	PID myPID(Kp,Ki,Kd,0,-100,100);
-	// necessary only when not using force mode in compute()
 	myPID.set_sampleTime_ms(sampleTime_ms);
-	Robot robot;
-	string s = "press switch to begin movement and while moving to stop the robot";
-	bool moving = false;
-	const unsigned SLEEP_TIME_MS = 10;
-	unsigned totalTime = 0;
 	
+	string s = "press switch to begin movement and while moving to stop the robot";
+	const unsigned SLEEP_TIME_MS = 10;
+	bool moving = false;
+	bool b_get_previous_time = true;
+	struct timeval previous_time, current_time;
+	float dt;
+	Robot robot;
+
 	robot.notifyStartup ();
 	puts ((string(robot.getStringTime())+" "+s).c_str());
 	while (true) {
@@ -57,7 +59,7 @@ int main(int argc, char **argv) {
 			if (!moving) {
 				puts ((string(robot.getStringTime())+" robot is moving").c_str());
 				moving = true;
-				totalTime = 0;
+				b_get_previous_time = true;
 			}
 			else {
 				robot.buttonPressedEvent();
@@ -83,11 +85,20 @@ int main(int argc, char **argv) {
 			continue;
 		}
 
-		totalTime += SLEEP_TIME_MS;
 		if (externalTimeCheck) {
-			//printf ("%u,%u\n",totalTime,myPID.get_sampleTime_ms());
-			if (totalTime<myPID.get_sampleTime_ms())
+			if (b_get_previous_time) {
+				gettimeofday(&previous_time,NULL);
+				b_get_previous_time = false;
 				continue;
+			}
+			else {
+				gettimeofday(&current_time,NULL);
+				
+				if ((dt=PID::difftime_ms(previous_time,current_time))<myPID.get_sampleTime_ms()) {
+					//printf ("dt=%.2f\n",dt);
+					continue;
+				}
+			}
 		}
 
 		//struct timeval time_begin, time_end;
@@ -98,14 +109,15 @@ int main(int argc, char **argv) {
 
 		printf ("%s distance=%.2f\n",robot.getStringTime(),measured_distance);
 
-		if (myPID.compute (fabs(target_distance-measured_distance),externalTimeCheck,totalTime)) {
-			totalTime = 0;
+		if (myPID.compute (fabs(target_distance-measured_distance),externalTimeCheck,dt)) {
+			b_get_previous_time = true;
 			printf("%s Kp=%.2f, Ki=%.2f, Kd=%.2f\n",robot.getStringTime(),myPID.get_Kp(),myPID.get_Ki(),myPID.get_Kd());
 			printf("%s setPoint=%.2f, input=%.2f, error=%.2f, output=%.2f, previous_error=%.2f\n",robot.getStringTime(),myPID.get_setPoint(),myPID.get_input(),myPID.get_error(),myPID.get_output(),myPID.get_previous_error());
 			printf("%s dt=%.2f, sampletime_ms=%u, proportional=%.2f, integral=%.2f, derivative=%.2f\n",robot.getStringTime(),myPID.get_dt(),myPID.get_sampleTime_ms(),myPID.get_proportional(),myPID.get_integral(),myPID.get_derivative());
 			printf("%s Kp*proportional=%.2f, Ki*integral=%.2f, Kd*derivative=%.2f\n",robot.getStringTime(),Kp*myPID.get_proportional(),Ki*myPID.get_integral(),Kd*myPID.get_derivative());
 			float percentage = fabs((target_distance-measured_distance)/target_distance*100);
-			printf("target distance=%.2f, measured_distance=%.2f, %% of error=%.2f%%\n",target_distance,measured_distance,percentage);
+			printf("%s target distance=%.2f, measured_distance=%.2f, %% of error=%.2f%%\n",robot.getStringTime(),target_distance,measured_distance,percentage);
+			puts("");
 			if (percentage<=maxError)
 				robot.pi2GoFull.stop();
 			else
