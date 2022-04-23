@@ -43,7 +43,7 @@ Use wanderer robot to build your own robot program, the robot works according to
 	- if an obstacle is found, the robot tries to avoid it and moves in spiral to the opposite direction of the obstacle found
 	- if an obstacle can't be avoided, the robot stops and notifies the problem using PWM LEDs
 	- PWM LEDs will show the position of the obstacle found
-- watch how it works: https://www.youtube.com/watch?v=p9FWoLJQIz0
+- watch how it works: https://youtu.be/qG_SAB7Q7Ko
 
 7. run PID_distance as root and follow the on screen instructions:
 - sudo ./PID_distance 10 0.00001 0.01 20 5 100 1 (avoid parameters to read the help)
@@ -57,4 +57,4 @@ This robot works according to these rules:
 - the objective of this robot is to find a front obstacle and keep a fixed distance to the obstacle. Use a folder to make the robot move forward and backward
 - if a non-front or too near front obstacle is found, the robot stops
 - PWM LEDs will show the position of the obstacle found
-- watch how it works: https://www.youtube.com/watch?v=07AbvlxQjJk
+- watch how it works: https://youtu.be/CEGxc8gxtFQ
